@@ -13,7 +13,7 @@ export class LedGoApi implements ICredentialType {
 
 	documentationUrl = 'https://github.com/ledgo/n8n-nodes-ledgo';
 
-	icon: Icon = { light: 'file:../icons/ledgo.svg', dark: 'file:../icons/ledgo.dark.svg' };
+	icon: Icon = { light: 'file:../icons/logo.png', dark: 'file:../icons/logo.png' };
 
 	properties: INodeProperties[] = [
 		{

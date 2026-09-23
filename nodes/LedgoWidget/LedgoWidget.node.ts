@@ -10,7 +10,7 @@ import { ledgoApiRequest } from '../shared/transport';
 import { isParameterProvided, parseJsonParameter } from '../shared/utils';
 import { widgetsToContent, type IWidgetLike } from '../shared/widget-content';
 
-export class LedGoWidget implements INodeType {
+export class LedgoWidget implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LedGo Widget',
 		name: 'ledgoWidget',
@@ -32,6 +32,23 @@ export class LedGoWidget implements INodeType {
 		],
 		properties: [
 			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Batch',
+						value: 'batch',
+					},
+					{
+						name: 'Widget',
+						value: 'widget',
+					},
+				],
+				default: 'widget',
+			},
+			{
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
@@ -42,60 +59,110 @@ export class LedGoWidget implements INodeType {
 						value: 'createWidget',
 						description: 'Create a new widget on the organization home dashboard',
 						action: 'Create a new widget on the organization home dashboard',
+						displayOptions: {
+							show: {
+								resource: ['widget'],
+							},
+						},
 					},
 					{
 						name: 'Create Widgets',
 						value: 'createWidgets',
 						description: 'Create several widgets with one gateway call',
 						action: 'Create several widgets with one gateway call',
+						displayOptions: {
+							show: {
+								resource: ['batch'],
+							},
+						},
 					},
 					{
 						name: 'Delete Widget',
 						value: 'deleteWidget',
 						description: 'Delete a widget from the organization home dashboard',
 						action: 'Delete a widget from the organization home dashboard',
+						displayOptions: {
+							show: {
+								resource: ['widget'],
+							},
+						},
 					},
 					{
 						name: 'Delete Widgets',
 						value: 'deleteWidgets',
 						description: 'Delete several widgets with one gateway call',
 						action: 'Delete several widgets with one gateway call',
+						displayOptions: {
+							show: {
+								resource: ['batch'],
+							},
+						},
 					},
 					{
 						name: 'Get Widget',
 						value: 'getWidget',
 						description: 'Get a single widget by its ID',
 						action: 'Get a single widget by its ID',
+						displayOptions: {
+							show: {
+								resource: ['widget'],
+							},
+						},
 					},
 					{
 						name: 'List Widgets',
 						value: 'listWidgets',
 						description: 'List all widgets on the organization home dashboard',
 						action: 'List all widgets on the organization home dashboard',
+						displayOptions: {
+							show: {
+								resource: ['widget'],
+							},
+						},
 					},
 					{
 						name: 'Read Content',
 						value: 'readContent',
 						description: 'Read the home dashboard content as AI-readable text',
 						action: 'Read the home dashboard content as AI readable text',
+						displayOptions: {
+							show: {
+								resource: ['widget'],
+							},
+						},
 					},
 					{
 						name: 'Update Widget',
 						value: 'updateWidget',
 						description: 'Update a widget configuration and/or position',
 						action: 'Update a widget configuration and or position',
+						displayOptions: {
+							show: {
+								resource: ['widget'],
+							},
+						},
 					},
 					{
 						name: 'Update Widget Positions',
 						value: 'updateWidgetPositions',
 						description: 'Update the positions of several widgets with one gateway call',
 						action: 'Update the positions of several widgets with one gateway call',
+						displayOptions: {
+							show: {
+								resource: ['batch'],
+							},
+						},
 					},
 					{
 						name: 'Update Widgets',
 						value: 'updateWidgets',
 						description: 'Update several widgets with one gateway call',
 						action: 'Update several widgets with one gateway call',
+						displayOptions: {
+							show: {
+								resource: ['batch'],
+							},
+						},
 					},
 				],
 				default: 'listWidgets',
@@ -109,6 +176,7 @@ export class LedGoWidget implements INodeType {
 				description: 'ID of the widget',
 				displayOptions: {
 					show: {
+						resource: ['widget'],
 						operation: ['getWidget', 'updateWidget', 'deleteWidget'],
 					},
 				},
@@ -183,6 +251,7 @@ export class LedGoWidget implements INodeType {
 				description: 'Type of widget to create',
 				displayOptions: {
 					show: {
+						resource: ['widget'],
 						operation: ['createWidget'],
 					},
 				},
@@ -195,6 +264,7 @@ export class LedGoWidget implements INodeType {
 				description: 'Widget-specific configuration. The shape varies by widget type. Falls back to defaults when omitted.',
 				displayOptions: {
 					show: {
+						resource: ['widget'],
 						operation: ['createWidget', 'updateWidget'],
 					},
 				},
@@ -207,6 +277,7 @@ export class LedGoWidget implements INodeType {
 				description: 'Grid position and dimensions. Object with x, y, w, and h properties. Falls back to sensible defaults when omitted.',
 				displayOptions: {
 					show: {
+						resource: ['widget'],
 						operation: ['createWidget', 'updateWidget'],
 					},
 				},
@@ -220,6 +291,7 @@ export class LedGoWidget implements INodeType {
 				description: 'Array of widgets to create. Each entry has a widgetType property and optional config and position properties.',
 				displayOptions: {
 					show: {
+						resource: ['batch'],
 						operation: ['createWidgets'],
 					},
 				},
@@ -233,6 +305,7 @@ export class LedGoWidget implements INodeType {
 				description: 'Array of widgets to update. Each entry has an ID property and optional config and position properties.',
 				displayOptions: {
 					show: {
+						resource: ['batch'],
 						operation: ['updateWidgets'],
 					},
 				},
@@ -246,6 +319,7 @@ export class LedGoWidget implements INodeType {
 				description: 'Array of widget identifiers to delete',
 				displayOptions: {
 					show: {
+						resource: ['batch'],
 						operation: ['deleteWidgets'],
 					},
 				},
@@ -259,6 +333,7 @@ export class LedGoWidget implements INodeType {
 				description: 'Array of position updates. Each entry has a widgetId property and a position object with x, y, w, and h properties.',
 				displayOptions: {
 					show: {
+						resource: ['batch'],
 						operation: ['updateWidgetPositions'],
 					},
 				},
@@ -288,6 +363,7 @@ export class LedGoWidget implements INodeType {
 				description: 'Output format of the generated content',
 				displayOptions: {
 					show: {
+						resource: ['widget'],
 						operation: ['readContent'],
 					},
 				},
@@ -325,139 +401,139 @@ export class LedGoWidget implements INodeType {
 }
 
 async function processOperation(this: IExecuteFunctions, operation: string, itemIndex: number) {
-		switch (operation) {
-			case 'listWidgets':
-				return ledgoApiRequest.call(this, 'GET', '/widgets');
+	switch (operation) {
+		case 'listWidgets':
+			return ledgoApiRequest.call(this, 'GET', '/widgets');
 
-			case 'getWidget': {
-				const widgetId = this.getNodeParameter('widgetId', itemIndex, '') as string;
+		case 'getWidget': {
+			const widgetId = this.getNodeParameter('widgetId', itemIndex, '') as string;
 
-				return ledgoApiRequest.call(this, 'GET', `/widgets/${widgetId}`);
-			}
-
-			case 'createWidget': {
-				const widgetType = this.getNodeParameter('widgetType', itemIndex, 'metrics') as string;
-				const config = parseJsonParameter(this.getNodeParameter('config', itemIndex, ''));
-				const position = parseJsonParameter(this.getNodeParameter('position', itemIndex, ''));
-				const body: IDataObject = { widgetType };
-				const hasConfig = isParameterProvided(config);
-				const hasPosition = isParameterProvided(position);
-
-				if (hasConfig) {
-					body.config = config;
-				}
-				if (hasPosition) {
-					body.position = position;
-				}
-
-				return ledgoApiRequest.call(this, 'POST', '/widgets', body);
-			}
-
-			case 'updateWidget': {
-				const widgetId = this.getNodeParameter('widgetId', itemIndex, '') as string;
-				const config = parseJsonParameter(this.getNodeParameter('config', itemIndex, ''));
-				const position = parseJsonParameter(this.getNodeParameter('position', itemIndex, ''));
-				const body: IDataObject = {};
-				const hasConfig = isParameterProvided(config);
-				const hasPosition = isParameterProvided(position);
-
-				if (hasConfig) {
-					body.config = config;
-				}
-				if (hasPosition) {
-					body.position = position;
-				}
-
-				return ledgoApiRequest.call(this, 'PATCH', `/widgets/${widgetId}`, body);
-			}
-
-			case 'deleteWidget': {
-				const widgetId = this.getNodeParameter('widgetId', itemIndex, '') as string;
-
-				await ledgoApiRequest.call(this, 'DELETE', `/widgets/${widgetId}`);
-
-				return { success: true };
-			}
-
-			case 'createWidgets': {
-				const widgets = parseJsonParameter(this.getNodeParameter('widgets', itemIndex, '[]'));
-				const widgetList = Array.isArray(widgets) ? widgets : [];
-				const body: IDataObject = {
-					widgets: widgetList.map((widget) => {
-						const item = widget as IDataObject;
-						const result: IDataObject = { widget_type: item.widgetType };
-
-						if (item.config !== undefined) {
-							result.config = item.config;
-						}
-						if (item.position !== undefined) {
-							result.position = item.position;
-						}
-
-						return result;
-					}),
-				};
-
-				return ledgoApiRequest.call(this, 'POST', '/widgets/batch', body);
-			}
-
-			case 'updateWidgets': {
-				const widgetUpdates = parseJsonParameter(this.getNodeParameter('widgetUpdates', itemIndex, '[]'));
-				const updateList = Array.isArray(widgetUpdates) ? widgetUpdates : [];
-				const body: IDataObject = {
-					widgets: updateList.map((update) => {
-						const item = update as IDataObject;
-						const result: IDataObject = { id: item.id };
-
-						if (item.config !== undefined) {
-							result.config = item.config;
-						}
-						if (item.position !== undefined) {
-							result.position = item.position;
-						}
-
-						return result;
-					}),
-				};
-
-				return ledgoApiRequest.call(this, 'PATCH', '/widgets/batch', body);
-			}
-
-			case 'deleteWidgets': {
-				const widgetIds = parseJsonParameter(this.getNodeParameter('widgetIds', itemIndex, '[]'));
-				const ids = Array.isArray(widgetIds) ? widgetIds : [];
-
-				await ledgoApiRequest.call(this, 'DELETE', '/widgets/batch', { ids });
-
-				return { success: true };
-			}
-
-			case 'updateWidgetPositions': {
-				const positions = parseJsonParameter(this.getNodeParameter('positions', itemIndex, '[]'));
-				const positionList = Array.isArray(positions) ? positions : [];
-				const body: IDataObject = {
-					positions: positionList.map((entry) => {
-						const item = entry as IDataObject;
-
-						return { id: item.widgetId, position: item.position };
-					}),
-				};
-
-				await ledgoApiRequest.call(this, 'PATCH', '/widgets/positions', body);
-
-				return { success: true };
-			}
-
-			case 'readContent': {
-				const format = this.getNodeParameter('format', itemIndex, 'ai') as 'ai' | 'markdown' | 'plain';
-				const response = await ledgoApiRequest.call(this, 'GET', '/widgets');
-				const widgets = (Array.isArray(response) ? response : []) as unknown as IWidgetLike[];
-				const content = widgetsToContent(widgets, format);
-
-				return { content };
-			}
-
-			default:
-				throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported`);
+			return ledgoApiRequest.call(this, 'GET', `/widgets/${widgetId}`);
 		}
+
+		case 'createWidget': {
+			const widgetType = this.getNodeParameter('widgetType', itemIndex, 'metrics') as string;
+			const config = parseJsonParameter(this.getNodeParameter('config', itemIndex, ''));
+			const position = parseJsonParameter(this.getNodeParameter('position', itemIndex, ''));
+			const body: IDataObject = { widgetType };
+			const hasConfig = isParameterProvided(config);
+			const hasPosition = isParameterProvided(position);
+
+			if (hasConfig) {
+				body.config = config;
+			}
+			if (hasPosition) {
+				body.position = position;
+			}
+
+			return ledgoApiRequest.call(this, 'POST', '/widgets', body);
+		}
+
+		case 'updateWidget': {
+			const widgetId = this.getNodeParameter('widgetId', itemIndex, '') as string;
+			const config = parseJsonParameter(this.getNodeParameter('config', itemIndex, ''));
+			const position = parseJsonParameter(this.getNodeParameter('position', itemIndex, ''));
+			const body: IDataObject = {};
+			const hasConfig = isParameterProvided(config);
+			const hasPosition = isParameterProvided(position);
+
+			if (hasConfig) {
+				body.config = config;
+			}
+			if (hasPosition) {
+				body.position = position;
+			}
+
+			return ledgoApiRequest.call(this, 'PATCH', `/widgets/${widgetId}`, body);
+		}
+
+		case 'deleteWidget': {
+			const widgetId = this.getNodeParameter('widgetId', itemIndex, '') as string;
+
+			await ledgoApiRequest.call(this, 'DELETE', `/widgets/${widgetId}`);
+
+			return { success: true };
+		}
+
+		case 'createWidgets': {
+			const widgets = parseJsonParameter(this.getNodeParameter('widgets', itemIndex, '[]'));
+			const widgetList = Array.isArray(widgets) ? widgets : [];
+			const body: IDataObject = {
+				widgets: widgetList.map((widget) => {
+					const item = widget as IDataObject;
+					const result: IDataObject = { widget_type: item.widgetType };
+
+					if (item.config !== undefined) {
+						result.config = item.config;
+					}
+					if (item.position !== undefined) {
+						result.position = item.position;
+					}
+
+					return result;
+				}),
+			};
+
+			return ledgoApiRequest.call(this, 'POST', '/widgets/batch', body);
+		}
+
+		case 'updateWidgets': {
+			const widgetUpdates = parseJsonParameter(this.getNodeParameter('widgetUpdates', itemIndex, '[]'));
+			const updateList = Array.isArray(widgetUpdates) ? widgetUpdates : [];
+			const body: IDataObject = {
+				widgets: updateList.map((update) => {
+					const item = update as IDataObject;
+					const result: IDataObject = { id: item.id };
+
+					if (item.config !== undefined) {
+						result.config = item.config;
+					}
+					if (item.position !== undefined) {
+						result.position = item.position;
+					}
+
+					return result;
+				}),
+			};
+
+			return ledgoApiRequest.call(this, 'PATCH', '/widgets/batch', body);
+		}
+
+		case 'deleteWidgets': {
+			const widgetIds = parseJsonParameter(this.getNodeParameter('widgetIds', itemIndex, '[]'));
+			const ids = Array.isArray(widgetIds) ? widgetIds : [];
+
+			await ledgoApiRequest.call(this, 'DELETE', '/widgets/batch', { ids });
+
+			return { success: true };
+		}
+
+		case 'updateWidgetPositions': {
+			const positions = parseJsonParameter(this.getNodeParameter('positions', itemIndex, '[]'));
+			const positionList = Array.isArray(positions) ? positions : [];
+			const body: IDataObject = {
+				positions: positionList.map((entry) => {
+					const item = entry as IDataObject;
+
+					return { id: item.widgetId, position: item.position };
+				}),
+			};
+
+			await ledgoApiRequest.call(this, 'PATCH', '/widgets/positions', body);
+
+			return { success: true };
+		}
+
+		case 'readContent': {
+			const format = this.getNodeParameter('format', itemIndex, 'ai') as 'ai' | 'markdown' | 'plain';
+			const response = await ledgoApiRequest.call(this, 'GET', '/widgets');
+			const widgets = (Array.isArray(response) ? response : []) as unknown as IWidgetLike[];
+			const content = widgetsToContent(widgets, format);
+
+			return { content };
+		}
+
+		default:
+			throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported`);
+	}
 }

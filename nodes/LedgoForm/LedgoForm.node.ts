@@ -9,7 +9,7 @@ import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { MONDA_CREDENTIALS_TYPE, ledgoApiRequest } from '../shared/transport';
 import { isParameterProvided, parseJsonParameter } from '../shared/utils';
 
-export class LedGoForm implements INodeType {
+export class LedgoForm implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LedGo Form',
 		name: 'ledgoForm',
@@ -31,6 +31,23 @@ export class LedGoForm implements INodeType {
 		],
 		properties: [
 			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Form',
+						value: 'form',
+					},
+					{
+						name: 'Response',
+						value: 'response',
+					},
+				],
+				default: 'form',
+			},
+			{
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
@@ -41,36 +58,66 @@ export class LedGoForm implements INodeType {
 						value: 'createForm',
 						description: 'Create a new form with field definitions',
 						action: 'Create a new form with field definitions',
+						displayOptions: {
+							show: {
+								resource: ['form'],
+							},
+						},
 					},
 					{
 						name: 'Delete Form',
 						value: 'deleteForm',
 						description: 'Delete a form and all its associated responses',
 						action: 'Delete a form and all its associated responses',
+						displayOptions: {
+							show: {
+								resource: ['form'],
+							},
+						},
 					},
 					{
 						name: 'Get Form Session URL',
 						value: 'getFormSessionUrl',
 						description: 'Get the URL of the async form session endpoint used by external providers',
 						action: 'Get the URL of the async form session endpoint used by external providers',
+						displayOptions: {
+							show: {
+								resource: ['form'],
+							},
+						},
 					},
 					{
 						name: 'List Forms',
 						value: 'listForms',
 						description: 'List all forms for the organization',
 						action: 'List all forms for the organization',
+						displayOptions: {
+							show: {
+								resource: ['form'],
+							},
+						},
 					},
 					{
 						name: 'List Responses',
 						value: 'listResponses',
 						description: 'List all submissions for a specific form',
 						action: 'List all submissions for a specific form',
+						displayOptions: {
+							show: {
+								resource: ['response'],
+							},
+						},
 					},
 					{
 						name: 'Update Form',
 						value: 'updateForm',
 						description: 'Update an existing form configuration',
 						action: 'Update an existing form configuration',
+						displayOptions: {
+							show: {
+								resource: ['form'],
+							},
+						},
 					},
 				],
 				default: 'listForms',
@@ -83,6 +130,7 @@ export class LedGoForm implements INodeType {
 				description: 'Session token of the form session. When provided, the URL to read the session record is also returned.',
 				displayOptions: {
 					show: {
+						resource: ['form'],
 						operation: ['getFormSessionUrl'],
 					},
 				},
@@ -96,6 +144,7 @@ export class LedGoForm implements INodeType {
 				description: 'ID of the form',
 				displayOptions: {
 					show: {
+						resource: ['form', 'response'],
 						operation: ['updateForm', 'deleteForm', 'listResponses'],
 					},
 				},
@@ -109,6 +158,7 @@ export class LedGoForm implements INodeType {
 				description: 'Display title of the form',
 				displayOptions: {
 					show: {
+						resource: ['form'],
 						operation: ['createForm', 'updateForm'],
 					},
 				},
@@ -122,6 +172,7 @@ export class LedGoForm implements INodeType {
 				description: 'URL-friendly unique identifier of the form (e.g. feedback-form-2024)',
 				displayOptions: {
 					show: {
+						resource: ['form'],
 						operation: ['createForm', 'updateForm'],
 					},
 				},
@@ -146,6 +197,7 @@ export class LedGoForm implements INodeType {
 				description: 'Access level controlling who can view and submit the form',
 				displayOptions: {
 					show: {
+						resource: ['form'],
 						operation: ['createForm', 'updateForm'],
 					},
 				},
@@ -158,6 +210,7 @@ export class LedGoForm implements INodeType {
 				description: 'Longer description shown at the top of the form',
 				displayOptions: {
 					show: {
+						resource: ['form'],
 						operation: ['createForm', 'updateForm'],
 					},
 				},
@@ -170,6 +223,7 @@ export class LedGoForm implements INodeType {
 				description: 'Array of field definitions that constitute the form data structure. Each field requires ID, type, and title properties.',
 				displayOptions: {
 					show: {
+						resource: ['form'],
 						operation: ['createForm', 'updateForm'],
 					},
 				},
@@ -182,6 +236,7 @@ export class LedGoForm implements INodeType {
 				description: 'Optional JSON Schema for advanced server-side validation',
 				displayOptions: {
 					show: {
+						resource: ['form'],
 						operation: ['createForm', 'updateForm'],
 					},
 				},
@@ -194,6 +249,7 @@ export class LedGoForm implements INodeType {
 				description: 'Optional UI Schema for advanced rendering customization',
 				displayOptions: {
 					show: {
+						resource: ['form'],
 						operation: ['createForm', 'updateForm'],
 					},
 				},
@@ -231,109 +287,109 @@ export class LedGoForm implements INodeType {
 }
 
 async function processOperation(this: IExecuteFunctions, operation: string, itemIndex: number) {
-		switch (operation) {
-			case 'listForms':
-				return ledgoApiRequest.call(this, 'GET', '/forms');
+	switch (operation) {
+		case 'listForms':
+			return ledgoApiRequest.call(this, 'GET', '/forms');
 
-			case 'getFormSessionUrl': {
-				const sessionId = this.getNodeParameter('sessionId', itemIndex, '') as string;
-				const url = await buildFormSessionUrl.call(this);
-				const result: IDataObject = { url };
-				const hasSessionId = isParameterProvided(sessionId);
+		case 'getFormSessionUrl': {
+			const sessionId = this.getNodeParameter('sessionId', itemIndex, '') as string;
+			const url = await buildFormSessionUrl.call(this);
+			const result: IDataObject = { url };
+			const hasSessionId = isParameterProvided(sessionId);
 
-				if (hasSessionId) {
-					result.readUrl = `${url}?id=${encodeURIComponent(sessionId)}`;
-				}
-
-				return result;
+			if (hasSessionId) {
+				result.readUrl = `${url}?id=${encodeURIComponent(sessionId)}`;
 			}
 
-			case 'createForm': {
-				const title = this.getNodeParameter('title', itemIndex, '') as string;
-				const slug = this.getNodeParameter('slug', itemIndex, '') as string;
-				const visibility = this.getNodeParameter('visibility', itemIndex, 'public') as string;
-				const description = this.getNodeParameter('description', itemIndex, '') as string;
-				const fields = parseJsonParameter(this.getNodeParameter('fields', itemIndex, ''));
-				const jsonSchema = parseJsonParameter(this.getNodeParameter('jsonSchema', itemIndex, ''));
-				const uiSchema = parseJsonParameter(this.getNodeParameter('uiSchema', itemIndex, ''));
-				const body: IDataObject = { title, slug, visibility };
-				const hasDescription = isParameterProvided(description);
-				const hasFields = isParameterProvided(fields);
-				const hasJsonSchema = isParameterProvided(jsonSchema);
-				const hasUiSchema = isParameterProvided(uiSchema);
-
-				if (hasDescription) {
-					body.description = description;
-				}
-				if (hasFields) {
-					body.fields = fields;
-				}
-				if (hasJsonSchema) {
-					body.jsonSchema = jsonSchema;
-				}
-				if (hasUiSchema) {
-					body.uiSchema = uiSchema;
-				}
-
-				return ledgoApiRequest.call(this, 'POST', '/forms', body);
-			}
-
-			case 'updateForm': {
-				const formId = this.getNodeParameter('formId', itemIndex, '') as string;
-				const title = this.getNodeParameter('title', itemIndex, '') as string;
-				const slug = this.getNodeParameter('slug', itemIndex, '') as string;
-				const visibility = this.getNodeParameter('visibility', itemIndex, 'public') as string;
-				const description = this.getNodeParameter('description', itemIndex, '') as string;
-				const fields = parseJsonParameter(this.getNodeParameter('fields', itemIndex, ''));
-				const jsonSchema = parseJsonParameter(this.getNodeParameter('jsonSchema', itemIndex, ''));
-				const uiSchema = parseJsonParameter(this.getNodeParameter('uiSchema', itemIndex, ''));
-				const body: IDataObject = { visibility };
-				const hasTitle = isParameterProvided(title);
-				const hasSlug = isParameterProvided(slug);
-				const hasDescription = isParameterProvided(description);
-				const hasFields = isParameterProvided(fields);
-				const hasJsonSchema = isParameterProvided(jsonSchema);
-				const hasUiSchema = isParameterProvided(uiSchema);
-
-				if (hasTitle) {
-					body.title = title;
-				}
-				if (hasSlug) {
-					body.slug = slug;
-				}
-				if (hasDescription) {
-					body.description = description;
-				}
-				if (hasFields) {
-					body.fields = fields;
-				}
-				if (hasJsonSchema) {
-					body.jsonSchema = jsonSchema;
-				}
-				if (hasUiSchema) {
-					body.uiSchema = uiSchema;
-				}
-
-				return ledgoApiRequest.call(this, 'PATCH', `/forms/${formId}`, body);
-			}
-
-			case 'deleteForm': {
-				const formId = this.getNodeParameter('formId', itemIndex, '') as string;
-
-				await ledgoApiRequest.call(this, 'DELETE', `/forms/${formId}`);
-
-				return { success: true };
-			}
-
-			case 'listResponses': {
-				const formId = this.getNodeParameter('formId', itemIndex, '') as string;
-
-				return ledgoApiRequest.call(this, 'GET', `/forms/${formId}/responses`);
-			}
-
-			default:
-				throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported`);
+			return result;
 		}
+
+		case 'createForm': {
+			const title = this.getNodeParameter('title', itemIndex, '') as string;
+			const slug = this.getNodeParameter('slug', itemIndex, '') as string;
+			const visibility = this.getNodeParameter('visibility', itemIndex, 'public') as string;
+			const description = this.getNodeParameter('description', itemIndex, '') as string;
+			const fields = parseJsonParameter(this.getNodeParameter('fields', itemIndex, ''));
+			const jsonSchema = parseJsonParameter(this.getNodeParameter('jsonSchema', itemIndex, ''));
+			const uiSchema = parseJsonParameter(this.getNodeParameter('uiSchema', itemIndex, ''));
+			const body: IDataObject = { title, slug, visibility };
+			const hasDescription = isParameterProvided(description);
+			const hasFields = isParameterProvided(fields);
+			const hasJsonSchema = isParameterProvided(jsonSchema);
+			const hasUiSchema = isParameterProvided(uiSchema);
+
+			if (hasDescription) {
+				body.description = description;
+			}
+			if (hasFields) {
+				body.fields = fields;
+			}
+			if (hasJsonSchema) {
+				body.jsonSchema = jsonSchema;
+			}
+			if (hasUiSchema) {
+				body.uiSchema = uiSchema;
+			}
+
+			return ledgoApiRequest.call(this, 'POST', '/forms', body);
+		}
+
+		case 'updateForm': {
+			const formId = this.getNodeParameter('formId', itemIndex, '') as string;
+			const title = this.getNodeParameter('title', itemIndex, '') as string;
+			const slug = this.getNodeParameter('slug', itemIndex, '') as string;
+			const visibility = this.getNodeParameter('visibility', itemIndex, 'public') as string;
+			const description = this.getNodeParameter('description', itemIndex, '') as string;
+			const fields = parseJsonParameter(this.getNodeParameter('fields', itemIndex, ''));
+			const jsonSchema = parseJsonParameter(this.getNodeParameter('jsonSchema', itemIndex, ''));
+			const uiSchema = parseJsonParameter(this.getNodeParameter('uiSchema', itemIndex, ''));
+			const body: IDataObject = { visibility };
+			const hasTitle = isParameterProvided(title);
+			const hasSlug = isParameterProvided(slug);
+			const hasDescription = isParameterProvided(description);
+			const hasFields = isParameterProvided(fields);
+			const hasJsonSchema = isParameterProvided(jsonSchema);
+			const hasUiSchema = isParameterProvided(uiSchema);
+
+			if (hasTitle) {
+				body.title = title;
+			}
+			if (hasSlug) {
+				body.slug = slug;
+			}
+			if (hasDescription) {
+				body.description = description;
+			}
+			if (hasFields) {
+				body.fields = fields;
+			}
+			if (hasJsonSchema) {
+				body.jsonSchema = jsonSchema;
+			}
+			if (hasUiSchema) {
+				body.uiSchema = uiSchema;
+			}
+
+			return ledgoApiRequest.call(this, 'PATCH', `/forms/${formId}`, body);
+		}
+
+		case 'deleteForm': {
+			const formId = this.getNodeParameter('formId', itemIndex, '') as string;
+
+			await ledgoApiRequest.call(this, 'DELETE', `/forms/${formId}`);
+
+			return { success: true };
+		}
+
+		case 'listResponses': {
+			const formId = this.getNodeParameter('formId', itemIndex, '') as string;
+
+			return ledgoApiRequest.call(this, 'GET', `/forms/${formId}/responses`);
+		}
+
+		default:
+			throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported`);
+	}
 }
 
 async function buildFormSessionUrl(this: IExecuteFunctions): Promise<string> {

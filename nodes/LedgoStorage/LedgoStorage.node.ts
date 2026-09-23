@@ -8,7 +8,7 @@ import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { ledgoApiRequest, ledgoApiRequestBinary, ledgoApiRequestFormData } from '../shared/transport';
 import { extractFileNameFromPath } from '../shared/utils';
 
-export class LedGoStorage implements INodeType {
+export class LedgoStorage implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LedGo Storage',
 		name: 'ledgoStorage',

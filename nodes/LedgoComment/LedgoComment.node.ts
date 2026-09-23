@@ -9,7 +9,7 @@ import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { ledgoApiRequest } from '../shared/transport';
 import { isParameterProvided, parseJsonParameter } from '../shared/utils';
 
-export class LedGoComment implements INodeType {
+export class LedgoComment implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LedGo Comment',
 		name: 'ledgoComment',
@@ -31,6 +31,27 @@ export class LedGoComment implements INodeType {
 		],
 		properties: [
 			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Comment',
+						value: 'comment',
+					},
+					{
+						name: 'Database',
+						value: 'database',
+					},
+					{
+						name: 'Document',
+						value: 'document',
+					},
+				],
+				default: 'database',
+			},
+			{
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
@@ -41,36 +62,66 @@ export class LedGoComment implements INodeType {
 						value: 'createDatabaseComment',
 						description: 'Create a top-level comment or a reply anchored to a database target',
 						action: 'Create a top level comment or a reply anchored to a database target',
+						displayOptions: {
+							show: {
+								resource: ['database'],
+							},
+						},
 					},
 					{
 						name: 'Create Document Comment',
 						value: 'createDocumentComment',
 						description: 'Create a top-level comment or a reply anchored to a document target',
 						action: 'Create a top level comment or a reply anchored to a document target',
+						displayOptions: {
+							show: {
+								resource: ['document'],
+							},
+						},
 					},
 					{
 						name: 'Delete Comment',
 						value: 'deleteComment',
 						description: 'Delete an owned comment',
 						action: 'Delete an owned comment',
+						displayOptions: {
+							show: {
+								resource: ['comment'],
+							},
+						},
 					},
 					{
 						name: 'List Database Comments',
 						value: 'listDatabaseComments',
 						description: 'List the comments of a database, optionally filtered to one target',
 						action: 'List the comments of a database optionally filtered to one target',
+						displayOptions: {
+							show: {
+								resource: ['database'],
+							},
+						},
 					},
 					{
 						name: 'List Document Comments',
 						value: 'listDocumentComments',
 						description: 'List the comments of a document, optionally filtered to one target',
 						action: 'List the comments of a document optionally filtered to one target',
+						displayOptions: {
+							show: {
+								resource: ['document'],
+							},
+						},
 					},
 					{
 						name: 'Update Comment',
 						value: 'updateComment',
 						description: 'Update the body of an owned comment',
 						action: 'Update the body of an owned comment',
+						displayOptions: {
+							show: {
+								resource: ['comment'],
+							},
+						},
 					},
 				],
 				default: 'listDatabaseComments',
@@ -84,6 +135,7 @@ export class LedGoComment implements INodeType {
 				description: 'ID of the database the comments belong to',
 				displayOptions: {
 					show: {
+						resource: ['database'],
 						operation: ['listDatabaseComments', 'createDatabaseComment'],
 					},
 				},
@@ -97,6 +149,7 @@ export class LedGoComment implements INodeType {
 				description: 'ID of the document the comments belong to',
 				displayOptions: {
 					show: {
+						resource: ['document'],
 						operation: ['listDocumentComments', 'createDocumentComment'],
 					},
 				},
@@ -109,6 +162,7 @@ export class LedGoComment implements INodeType {
 				description: 'Deterministic target key to filter a single element. Leave empty to list all comments.',
 				displayOptions: {
 					show: {
+						resource: ['database', 'document'],
 						operation: ['listDatabaseComments', 'listDocumentComments'],
 					},
 				},
@@ -122,6 +176,7 @@ export class LedGoComment implements INodeType {
 				description: 'Fine-grained target the comment is anchored to. Object with a kind property (database, column, record, cell, or block) and the required identifiers for that kind.',
 				displayOptions: {
 					show: {
+						resource: ['database', 'document'],
 						operation: ['createDatabaseComment', 'createDocumentComment'],
 					},
 				},
@@ -135,6 +190,7 @@ export class LedGoComment implements INodeType {
 				description: 'Text content of the comment',
 				displayOptions: {
 					show: {
+						resource: ['database', 'document', 'comment'],
 						operation: ['createDatabaseComment', 'createDocumentComment', 'updateComment'],
 					},
 				},
@@ -147,6 +203,7 @@ export class LedGoComment implements INodeType {
 				description: 'Parent comment ID to reply, empty for a top-level comment',
 				displayOptions: {
 					show: {
+						resource: ['database', 'document'],
 						operation: ['createDatabaseComment', 'createDocumentComment'],
 					},
 				},
@@ -160,6 +217,7 @@ export class LedGoComment implements INodeType {
 				description: 'ID of the comment',
 				displayOptions: {
 					show: {
+						resource: ['comment'],
 						operation: ['updateComment', 'deleteComment'],
 					},
 				},

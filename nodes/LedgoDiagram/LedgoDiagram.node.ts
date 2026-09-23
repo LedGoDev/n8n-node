@@ -9,7 +9,7 @@ import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { ledgoApiRequest } from '../shared/transport';
 import { isParameterProvided } from '../shared/utils';
 
-export class LedGoDiagram implements INodeType {
+export class LedgoDiagram implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LedGo Diagram',
 		name: 'ledgoDiagram',

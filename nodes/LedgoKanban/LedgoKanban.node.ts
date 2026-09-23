@@ -9,7 +9,7 @@ import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { ledgoApiPublicRequest, ledgoApiRequest } from '../shared/transport';
 import { isParameterProvided, parseJsonParameter } from '../shared/utils';
 
-export class LedGoKanban implements INodeType {
+export class LedgoKanban implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LedGo Kanban',
 		name: 'ledgoKanban',
@@ -31,6 +31,35 @@ export class LedGoKanban implements INodeType {
 		],
 		properties: [
 			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Card',
+						value: 'card',
+					},
+					{
+						name: 'Column',
+						value: 'column',
+					},
+					{
+						name: 'Dashboard',
+						value: 'dashboard',
+					},
+					{
+						name: 'Item',
+						value: 'item',
+					},
+					{
+						name: 'Panel',
+						value: 'panel',
+					},
+				],
+				default: 'dashboard',
+			},
+			{
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
@@ -41,144 +70,264 @@ export class LedGoKanban implements INodeType {
 						value: 'createAccessLink',
 						description: 'Mint a signed access link for a blueprint dashboard',
 						action: 'Mint a signed access link for a blueprint dashboard',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'Create Blueprint',
 						value: 'createBlueprint',
 						description: 'Create a blueprint dashboard rendered from an external provider',
 						action: 'Create a blueprint dashboard rendered from an external provider',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'Create Card',
 						value: 'createCard',
 						description: 'Create a new card within a column',
 						action: 'Create a new card within a column',
+						displayOptions: {
+							show: {
+								resource: ['card'],
+							},
+						},
 					},
 					{
 						name: 'Create Column',
 						value: 'createColumn',
 						description: 'Create a new column within a dashboard',
 						action: 'Create a new column within a dashboard',
+						displayOptions: {
+							show: {
+								resource: ['column'],
+							},
+						},
 					},
 					{
 						name: 'Create Dashboard',
 						value: 'createDashboard',
 						description: 'Create a new kanban dashboard with an optional card template',
 						action: 'Create a new kanban dashboard with an optional card template',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'Create Panel',
 						value: 'createPanel',
 						description: 'Create a new panel within a column',
 						action: 'Create a new panel within a column',
+						displayOptions: {
+							show: {
+								resource: ['panel'],
+							},
+						},
 					},
 					{
 						name: 'Delete Dashboard',
 						value: 'deleteDashboard',
 						description: 'Delete a dashboard and all its columns, panels, and cards',
 						action: 'Delete a dashboard and all its columns panels and cards',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'Delete Item',
 						value: 'deleteItem',
 						description: 'Delete a column, panel, or card by its ID and type',
 						action: 'Delete a column panel or card by its id and type',
+						displayOptions: {
+							show: {
+								resource: ['item'],
+							},
+						},
 					},
 					{
 						name: 'Get Item',
 						value: 'getItem',
 						description: 'Get a single column, panel, or card by its ID',
 						action: 'Get a single column panel or card by its id',
+						displayOptions: {
+							show: {
+								resource: ['item'],
+							},
+						},
 					},
 					{
 						name: 'Get Public Board',
 						value: 'getPublicBoard',
 						description: 'Read a public blueprint board through its public route',
 						action: 'Read a public blueprint board through its public route',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'Get Public Config',
 						value: 'getPublicConfig',
 						description: 'Read the server-only public configuration of a blueprint',
 						action: 'Read the server only public configuration of a blueprint',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'List Access Links',
 						value: 'listAccessLinks',
 						description: 'List the signed access links minted for a dashboard',
 						action: 'List the signed access links minted for a dashboard',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'List Dashboards',
 						value: 'listDashboards',
 						description: 'List all kanban dashboards for the organization',
 						action: 'List all kanban dashboards for the organization',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'List Items',
 						value: 'listItems',
 						description: 'List all columns, panels, and cards within a dashboard',
 						action: 'List all columns panels and cards within a dashboard',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'Move Card (Public)',
 						value: 'movePublicCard',
 						description: 'Move a card through a public signed link with edit scope',
 						action: 'Move a card through a public signed link with edit scope',
+						displayOptions: {
+							show: {
+								resource: ['card'],
+							},
+						},
 					},
 					{
 						name: 'Move Item',
 						value: 'moveItem',
 						description: 'Move an item to a new container or change its position',
 						action: 'Move an item to a new container or change its position',
+						displayOptions: {
+							show: {
+								resource: ['item'],
+							},
+						},
 					},
 					{
 						name: 'Revoke Access Link',
 						value: 'revokeAccessLink',
 						description: 'Revoke a signed access link so it can no longer be used',
 						action: 'Revoke a signed access link so it can no longer be used',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'Run Card Action (Public)',
 						value: 'runPublicCardAction',
 						description: 'Run a declarative card action through a public signed link',
 						action: 'Run a declarative card action through a public signed link',
+						displayOptions: {
+							show: {
+								resource: ['card'],
+							},
+						},
 					},
 					{
 						name: 'Set Scope',
 						value: 'setScope',
 						description: 'Update the visibility scope of a dashboard',
 						action: 'Update the visibility scope of a dashboard',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'Update Card',
 						value: 'updateCard',
 						description: 'Update an existing card',
 						action: 'Update an existing card',
+						displayOptions: {
+							show: {
+								resource: ['card'],
+							},
+						},
 					},
 					{
 						name: 'Update Column',
 						value: 'updateColumn',
 						description: 'Update an existing column',
 						action: 'Update an existing column',
+						displayOptions: {
+							show: {
+								resource: ['column'],
+							},
+						},
 					},
 					{
 						name: 'Update Dashboard',
 						value: 'updateDashboard',
 						description: 'Update the name or card template of a dashboard',
 						action: 'Update the name or card template of a dashboard',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 					{
 						name: 'Update Panel',
 						value: 'updatePanel',
 						description: 'Update an existing panel',
 						action: 'Update an existing panel',
+						displayOptions: {
+							show: {
+								resource: ['panel'],
+							},
+						},
 					},
 					{
 						name: 'Update Public Config',
 						value: 'updatePublicConfig',
 						description: 'Create or update the public configuration of a blueprint',
 						action: 'Create or update the public configuration of a blueprint',
+						displayOptions: {
+							show: {
+								resource: ['dashboard'],
+							},
+						},
 					},
 				],
 				default: 'listDashboards',
@@ -192,6 +341,7 @@ export class LedGoKanban implements INodeType {
 				description: 'ID of the kanban dashboard',
 				displayOptions: {
 					show: {
+						resource: ['dashboard', 'card', 'column', 'panel'],
 						operation: [
 							'updateDashboard',
 							'deleteDashboard',
@@ -221,6 +371,7 @@ export class LedGoKanban implements INodeType {
 				description: 'ID of the column, panel, or card',
 				displayOptions: {
 					show: {
+						resource: ['item', 'column', 'panel', 'card'],
 						operation: ['getItem', 'updateColumn', 'updatePanel', 'updateCard', 'deleteItem', 'moveItem'],
 					},
 				},
@@ -234,6 +385,7 @@ export class LedGoKanban implements INodeType {
 				description: 'ID of the card to move or act on',
 				displayOptions: {
 					show: {
+						resource: ['card'],
 						operation: ['movePublicCard', 'runPublicCardAction'],
 					},
 				},
@@ -247,6 +399,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Display name of the dashboard or column',
 				displayOptions: {
 					show: {
+						resource: ['dashboard', 'column'],
 						operation: ['createDashboard', 'updateDashboard', 'createColumn', 'updateColumn', 'createBlueprint'],
 					},
 				},
@@ -259,6 +412,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Field definitions that define the data structure of cards. Use an array of objects with ID, type, and title properties.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['createDashboard', 'updateDashboard', 'createBlueprint'],
 					},
 				},
@@ -288,6 +442,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Visibility scope of the dashboard. Publishing a board (public) is subject to the organization plan limit.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['setScope', 'createBlueprint'],
 					},
 				},
@@ -301,6 +456,7 @@ export class LedGoKanban implements INodeType {
 				description: 'ID of the parent column',
 				displayOptions: {
 					show: {
+						resource: ['card', 'panel'],
 						operation: ['createPanel', 'createCard'],
 					},
 				},
@@ -314,6 +470,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Display title of the panel',
 				displayOptions: {
 					show: {
+						resource: ['panel'],
 						operation: ['createPanel', 'updatePanel'],
 					},
 				},
@@ -326,6 +483,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Hex color code (e.g. #ff0000) or named color for visual identification',
 				displayOptions: {
 					show: {
+						resource: ['panel'],
 						operation: ['createPanel', 'updatePanel'],
 					},
 				},
@@ -339,6 +497,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Custom card data object. Keys must match the IDs defined in the dashboard card template.',
 				displayOptions: {
 					show: {
+						resource: ['card'],
 						operation: ['createCard', 'updateCard'],
 					},
 				},
@@ -351,6 +510,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Optional reference to a specific panel within the column',
 				displayOptions: {
 					show: {
+						resource: ['card'],
 						operation: ['createCard', 'updateCard'],
 					},
 				},
@@ -363,6 +523,7 @@ export class LedGoKanban implements INodeType {
 				description: '0-indexed position of the item. Leave at 0 to let the platform assign the position.',
 				displayOptions: {
 					show: {
+						resource: ['column', 'panel', 'card'],
 						operation: [
 							'createColumn',
 							'createPanel',
@@ -396,6 +557,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Type of the item to delete or move',
 				displayOptions: {
 					show: {
+						resource: ['item'],
 						operation: ['deleteItem', 'moveItem'],
 					},
 				},
@@ -409,6 +571,7 @@ export class LedGoKanban implements INodeType {
 				description: 'ID of the target container (column or panel)',
 				displayOptions: {
 					show: {
+						resource: ['item'],
 						operation: ['moveItem'],
 					},
 				},
@@ -421,6 +584,7 @@ export class LedGoKanban implements INodeType {
 				description: 'New position index of the item, 0-based',
 				displayOptions: {
 					show: {
+						resource: ['item'],
 						operation: ['moveItem'],
 					},
 				},
@@ -455,6 +619,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Provider that feeds the board',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -467,6 +632,7 @@ export class LedGoKanban implements INodeType {
 				description: 'URL of the provider manifest. Leave empty to keep or clear the stored value.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -479,6 +645,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Parameters accepted by the public read endpoint. Array of objects with ID, label, type, required, defaultValue, and description properties.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -491,6 +658,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Request used to read the board. Object with URL, method, headers, body, timeoutMs, and auth properties.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -503,6 +671,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Request used to write the board back. Object with URL, method, headers, body, timeoutMs, and auth properties.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -515,6 +684,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Mapping applied to the provider response. Object with columns, panels, cards, version, and field map properties.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -527,6 +697,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Declarative actions offered by the cards of the board. Array of objects with ID, label, variant, requiresConfirm, allowedColumns, and allowedPanels properties.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -556,6 +727,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Authentication mode applied to the provider requests',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -568,6 +740,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Whether public callers may write to the board',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -580,6 +753,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Whether each write consumes a single-use token',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig', 'createAccessLink'],
 					},
 				},
@@ -592,6 +766,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Origins allowed to embed the public board. Array of origin strings, or empty to allow any origin.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -604,6 +779,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Auto-refresh interval of the public board in milliseconds. Leave at 0 to keep or clear the stored value.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['updatePublicConfig'],
 					},
 				},
@@ -617,6 +793,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Signed access-link token. Required when the board requires a signed link.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard', 'card'],
 						operation: ['getPublicBoard', 'movePublicCard', 'runPublicCardAction'],
 					},
 				},
@@ -641,6 +818,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Scope granted by the link',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['createAccessLink'],
 					},
 				},
@@ -653,6 +831,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Lifetime of the link in seconds, clamped by the server. Leave at 0 for the server default.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['createAccessLink'],
 					},
 				},
@@ -665,6 +844,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Provider params forwarded to the public route as query string values. Object of key-value pairs.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['createAccessLink'],
 					},
 				},
@@ -677,6 +857,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Claims exposed to the provider as {{claim.*}} placeholders. Object of key-value pairs.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['createAccessLink'],
 					},
 				},
@@ -689,6 +870,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Columns the link may move cards into. Array of column IDs, or empty for any column.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['createAccessLink'],
 					},
 				},
@@ -701,6 +883,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Panels the link may move cards into. Array of panel IDs, or empty for any panel.',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['createAccessLink'],
 					},
 				},
@@ -714,6 +897,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Unique identifier of the access link to revoke',
 				displayOptions: {
 					show: {
+						resource: ['dashboard'],
 						operation: ['revokeAccessLink'],
 					},
 				},
@@ -727,6 +911,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Identifier of the destination column of the move',
 				displayOptions: {
 					show: {
+						resource: ['card'],
 						operation: ['movePublicCard'],
 					},
 				},
@@ -739,6 +924,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Identifier of the destination panel, empty for the column root',
 				displayOptions: {
 					show: {
+						resource: ['card'],
 						operation: ['movePublicCard'],
 					},
 				},
@@ -751,6 +937,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Card data after merging the destination state updates',
 				displayOptions: {
 					show: {
+						resource: ['card'],
 						operation: ['movePublicCard'],
 					},
 				},
@@ -764,6 +951,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Identifier of the action executed on the card',
 				displayOptions: {
 					show: {
+						resource: ['card'],
 						operation: ['runPublicCardAction'],
 					},
 				},
@@ -776,6 +964,7 @@ export class LedGoKanban implements INodeType {
 				description: 'Provider version the operation is based on, for conflict detection',
 				displayOptions: {
 					show: {
+						resource: ['card'],
 						operation: ['movePublicCard', 'runPublicCardAction'],
 					},
 				},

@@ -1,6 +1,6 @@
 {
 	"name": "@ledgo/n8n-nodes-sdk",
-	"version": "1.0.2",
+	"version": "1.1.0",
 	"description": "n8n community node package that enables workflows to use the LedGo AI Agent Engineering Platform: kanbans, forms, databases, diagrams, documents, comments, widgets, and storage.",
 	"license": "MIT",
 	"homepage": "https://ledgo.dev/",
@@ -36,14 +36,14 @@
 			"dist/credentials/LedGoApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/LedGoKanban/LedGoKanban.node.js",
-			"dist/nodes/LedGoForm/LedGoForm.node.js",
-			"dist/nodes/LedGoDatabase/LedGoDatabase.node.js",
-			"dist/nodes/LedGoDiagram/LedGoDiagram.node.js",
-			"dist/nodes/LedGoDocument/LedGoDocument.node.js",
-			"dist/nodes/LedGoComment/LedGoComment.node.js",
-			"dist/nodes/LedGoWidget/LedGoWidget.node.js",
-			"dist/nodes/LedGoStorage/LedGoStorage.node.js"
+			"dist/nodes/LedgoKanban/LedgoKanban.node.js",
+			"dist/nodes/LedgoForm/LedgoForm.node.js",
+			"dist/nodes/LedgoDatabase/LedgoDatabase.node.js",
+			"dist/nodes/LedgoDiagram/LedgoDiagram.node.js",
+			"dist/nodes/LedgoDocument/LedgoDocument.node.js",
+			"dist/nodes/LedgoComment/LedgoComment.node.js",
+			"dist/nodes/LedgoWidget/LedgoWidget.node.js",
+			"dist/nodes/LedgoStorage/LedgoStorage.node.js"
 		]
 	},
 	"devDependencies": {

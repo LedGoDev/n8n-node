@@ -10,7 +10,7 @@ import { ledgoApiRequest } from '../shared/transport';
 import { isParameterProvided, parseJsonParameter } from '../shared/utils';
 import { widgetsToContent, type IWidgetLike } from '../shared/widget-content';
 
-export class LedGoDocument implements INodeType {
+export class LedgoDocument implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'LedGo Document',
 		name: 'ledgoDocument',
@@ -32,6 +32,23 @@ export class LedGoDocument implements INodeType {
 		],
 		properties: [
 			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Block',
+						value: 'block',
+					},
+					{
+						name: 'Document',
+						value: 'document',
+					},
+				],
+				default: 'document',
+			},
+			{
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
@@ -42,78 +59,143 @@ export class LedGoDocument implements INodeType {
 						value: 'createBlock',
 						description: 'Create a new block inside a document',
 						action: 'Create a new block inside a document',
+						displayOptions: {
+							show: {
+								resource: ['block'],
+							},
+						},
 					},
 					{
 						name: 'Create Blocks',
 						value: 'createBlocks',
 						description: 'Create several blocks inside a document with one gateway call',
 						action: 'Create several blocks inside a document with one gateway call',
+						displayOptions: {
+							show: {
+								resource: ['block'],
+							},
+						},
 					},
 					{
 						name: 'Create Document',
 						value: 'createDocument',
 						description: 'Create a new document',
 						action: 'Create a new document',
+						displayOptions: {
+							show: {
+								resource: ['document'],
+							},
+						},
 					},
 					{
 						name: 'Create Document With Blocks',
 						value: 'createDocumentWithBlocks',
 						description: 'Create a complete document with all its blocks in one call',
 						action: 'Create a complete document with all its blocks in one call',
+						displayOptions: {
+							show: {
+								resource: ['document'],
+							},
+						},
 					},
 					{
 						name: 'Delete Block',
 						value: 'deleteBlock',
 						description: 'Delete a block from a document',
 						action: 'Delete a block from a document',
+						displayOptions: {
+							show: {
+								resource: ['block'],
+							},
+						},
 					},
 					{
 						name: 'Delete Document',
 						value: 'deleteDocument',
 						description: 'Delete a document and all its blocks',
 						action: 'Delete a document and all its blocks',
+						displayOptions: {
+							show: {
+								resource: ['document'],
+							},
+						},
 					},
 					{
 						name: 'Get Document',
 						value: 'getDocument',
 						description: 'Get a single document by its ID',
 						action: 'Get a single document by its ID',
+						displayOptions: {
+							show: {
+								resource: ['document'],
+							},
+						},
 					},
 					{
 						name: 'List Blocks',
 						value: 'listBlocks',
 						description: 'List all blocks of a document',
 						action: 'List all blocks of a document',
+						displayOptions: {
+							show: {
+								resource: ['block'],
+							},
+						},
 					},
 					{
 						name: 'List Documents',
 						value: 'listDocuments',
 						description: 'List all documents of the token-scoped project',
 						action: 'List all documents of the token scoped project',
+						displayOptions: {
+							show: {
+								resource: ['document'],
+							},
+						},
 					},
 					{
 						name: 'Read Content',
 						value: 'readContent',
 						description: 'Read the content of a document as AI-readable text',
 						action: 'Read the content of a document as AI readable text',
+						displayOptions: {
+							show: {
+								resource: ['document'],
+							},
+						},
 					},
 					{
 						name: 'Update Block',
 						value: 'updateBlock',
 						description: 'Update the widget type, config, or position of a block',
 						action: 'Update the widget type config or position of a block',
+						displayOptions: {
+							show: {
+								resource: ['block'],
+							},
+						},
 					},
 					{
 						name: 'Update Block Positions',
 						value: 'updateBlockPositions',
 						description: 'Update the positions of several blocks with one gateway call',
 						action: 'Update the positions of several blocks with one gateway call',
+						displayOptions: {
+							show: {
+								resource: ['block'],
+							},
+						},
 					},
 					{
 						name: 'Update Document',
 						value: 'updateDocument',
 						description: 'Update the properties of a document',
 						action: 'Update the properties of a document',
+						displayOptions: {
+							show: {
+								resource: ['document'],
+							},
+						},
 					},
 				],
 				default: 'listDocuments',
@@ -127,6 +209,7 @@ export class LedGoDocument implements INodeType {
 				description: 'ID of the document',
 				displayOptions: {
 					show: {
+						resource: ['document', 'block'],
 						operation: [
 							'getDocument',
 							'updateDocument',
@@ -151,6 +234,7 @@ export class LedGoDocument implements INodeType {
 				description: 'ID of the block',
 				displayOptions: {
 					show: {
+						resource: ['block'],
 						operation: ['updateBlock', 'deleteBlock'],
 					},
 				},
@@ -164,6 +248,7 @@ export class LedGoDocument implements INodeType {
 				description: 'Display title of the document',
 				displayOptions: {
 					show: {
+						resource: ['document'],
 						operation: ['createDocument', 'updateDocument', 'createDocumentWithBlocks'],
 					},
 				},
@@ -176,6 +261,7 @@ export class LedGoDocument implements INodeType {
 				description: 'Short summary shown in the documents list',
 				displayOptions: {
 					show: {
+						resource: ['document'],
 						operation: ['createDocument', 'updateDocument', 'createDocumentWithBlocks'],
 					},
 				},
@@ -200,6 +286,7 @@ export class LedGoDocument implements INodeType {
 				description: 'Orientation of the A4 sheet',
 				displayOptions: {
 					show: {
+						resource: ['document'],
 						operation: ['createDocument', 'updateDocument', 'createDocumentWithBlocks'],
 					},
 				},
@@ -224,6 +311,7 @@ export class LedGoDocument implements INodeType {
 				description: 'Publication status of the document',
 				displayOptions: {
 					show: {
+						resource: ['document'],
 						operation: ['createDocument', 'updateDocument', 'createDocumentWithBlocks'],
 					},
 				},
@@ -253,6 +341,7 @@ export class LedGoDocument implements INodeType {
 				description: 'Sharing scope of the document',
 				displayOptions: {
 					show: {
+						resource: ['document'],
 						operation: ['createDocument', 'updateDocument', 'createDocumentWithBlocks'],
 					},
 				},
@@ -266,6 +355,7 @@ export class LedGoDocument implements INodeType {
 				description: 'Blocks created inside the document in the same transaction. Each entry has a widgetType, config, and position property. The title block is always full-width (w: 12).',
 				displayOptions: {
 					show: {
+						resource: ['document', 'block'],
 						operation: ['createDocumentWithBlocks', 'createBlocks'],
 					},
 				},
@@ -279,6 +369,7 @@ export class LedGoDocument implements INodeType {
 				description: 'Block to create inside the document. Object with widgetType, config, and position properties.',
 				displayOptions: {
 					show: {
+						resource: ['block'],
 						operation: ['createBlock'],
 					},
 				},
@@ -291,6 +382,7 @@ export class LedGoDocument implements INodeType {
 				description: 'Block properties to update. Object with optional widgetType, config, and position properties.',
 				displayOptions: {
 					show: {
+						resource: ['block'],
 						operation: ['updateBlock'],
 					},
 				},
@@ -304,6 +396,7 @@ export class LedGoDocument implements INodeType {
 				description: 'Array of position updates. Each entry has a blockId property and a position object with x, y, w, and h properties.',
 				displayOptions: {
 					show: {
+						resource: ['block'],
 						operation: ['updateBlockPositions'],
 					},
 				},
@@ -333,6 +426,7 @@ export class LedGoDocument implements INodeType {
 				description: 'Output format of the generated content',
 				displayOptions: {
 					show: {
+						resource: ['document'],
 						operation: ['readContent'],
 					},
 				},
@@ -528,15 +622,15 @@ async function processOperation(this: IExecuteFunctions, operation: string, item
 			return { success: true };
 		}
 
-case 'readContent': {
-				const documentId = this.getNodeParameter('documentId', itemIndex, '') as string;
-				const format = this.getNodeParameter('format', itemIndex, 'ai') as 'ai' | 'markdown' | 'plain';
-				const response = await ledgoApiRequest.call(this, 'GET', `/documents/${documentId}/blocks`);
-				const blocks = (Array.isArray(response) ? response : []) as unknown as IWidgetLike[];
-				const content = widgetsToContent(blocks, format);
+		case 'readContent': {
+			const documentId = this.getNodeParameter('documentId', itemIndex, '') as string;
+			const format = this.getNodeParameter('format', itemIndex, 'ai') as 'ai' | 'markdown' | 'plain';
+			const response = await ledgoApiRequest.call(this, 'GET', `/documents/${documentId}/blocks`);
+			const blocks = (Array.isArray(response) ? response : []) as unknown as IWidgetLike[];
+			const content = widgetsToContent(blocks, format);
 
-				return { content };
-			}
+			return { content };
+		}
 
 		default:
 			throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported`);
