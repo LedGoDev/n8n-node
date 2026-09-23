@@ -1,6 +1,6 @@
 {
 	"name": "@ledgo/n8n-nodes-sdk",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "n8n community node package that enables workflows to use the LedGo AI Agent Engineering Platform: kanbans, forms, databases, diagrams, documents, comments, widgets, and storage.",
 	"license": "MIT",
 	"homepage": "https://ledgo.dev/",
